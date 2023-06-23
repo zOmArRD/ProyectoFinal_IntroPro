@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ProyectoFinal_IntroPro")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Calculadora de calificaciones")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("OMY TECHNOLOGY")]
 [assembly: AssemblyProduct("ProyectoFinal_IntroPro")]
-[assembly: AssemblyCopyright("Copyright ©  2023")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright© OMY TECHNOLOGY  2023")]
+[assembly: AssemblyTrademark("OMY TECHNOLOGY")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

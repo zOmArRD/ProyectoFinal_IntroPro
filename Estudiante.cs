@@ -50,5 +50,10 @@ namespace ProyectoFinal_IntroPro
                 Console.WriteLine("{0}\t\t{1}", kvp.Key, kvp.Value);
             }
         }
+        
+        public Dictionary<string, double> ObtenerCalificaciones()
+        {
+            return _calificaciones;
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ProyectoFinal_IntroPro
 {
-    internal class Program
+    internal static class Program
     {
         private static readonly List<Estudiante> Estudiantes = new List<Estudiante>();
 
@@ -114,15 +114,43 @@ namespace ProyectoFinal_IntroPro
                 return;
             }
 
-            Console.WriteLine("Estudiantes:");
-            MostrarNombresEstudiantes();
+            foreach (var estudiante in Estudiantes)
+            {
+                Console.WriteLine("ESTUDIANTE: {0}\n", estudiante.Nombre);
+                Console.WriteLine("Calificación\t\tCondición");
+                Console.WriteLine("---------------------------------------");
 
-            Console.Write("Selecciona un estudiante (1-{0}): ", Estudiantes.Count);
-            var indiceEstudiante = LeerEnteroEntre(1, Estudiantes.Count) - 1;
+                foreach (var kvp in estudiante.ObtenerCalificaciones())
+                {
+                    var materia = kvp.Key;
+                    var calificacion = kvp.Value;
+                    var condicion = ObtenerCondicionCalificacion(calificacion);
 
-            var estudianteSeleccionado = Estudiantes[indiceEstudiante];
-            Console.WriteLine("\nDatos del estudiante {0}:", estudianteSeleccionado.Nombre);
-            estudianteSeleccionado.MostrarDatos();
+                    Console.WriteLine("{0}\t\t\t{1}", calificacion, condicion);
+                }
+
+                Console.WriteLine("\n");
+            }
+        }
+
+        private static string ObtenerCondicionCalificacion(double calificacion)
+        {
+            if (calificacion >= 90)
+            {
+                return "Excelente";
+            }
+            else if (calificacion >= 80)
+            {
+                return "Bueno";
+            }
+            else if (calificacion >= 70)
+            {
+                return "Regular";
+            }
+            else
+            {
+                return "Reprobado";
+            }
         }
 
         private static void MostrarCondicionCalificaciones()
@@ -172,12 +200,14 @@ namespace ProyectoFinal_IntroPro
 
         private static void AgregarEstudiante()
         {
+            Console.WriteLine("Agregar estudiantes:");
+            
             Console.Write("Ingrese el número de estudiantes a agregar: ");
             var numeroEstudiantes = LeerEnteroPositivo();
 
             for (var i = 0; i < numeroEstudiantes; i++)
             {
-                Console.WriteLine("\nEstudiante {0}:", i + 1);
+                Console.WriteLine("\nEstudiante ({0}/{1}):", i + 1, numeroEstudiantes);
                 Console.Write("Nombre: ");
                 var nombre = Console.ReadLine();
 
@@ -188,7 +218,8 @@ namespace ProyectoFinal_IntroPro
 
                 for (var j = 0; j < numeroMaterias; j++)
                 {
-                    Console.WriteLine("\nMateria {0}:", j + 1);
+                    Console.WriteLine("\nMateria ({0}/{1}:", j + 1, numeroMaterias);
+                    /*Console.WriteLine("\nMateria {0}:", j + 1);*/
                     Console.Write("Nombre de la materia: ");
                     var nombreMateria = Console.ReadLine();
 
