@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ProyectoFinal_IntroPro
 {
@@ -8,85 +7,78 @@ namespace ProyectoFinal_IntroPro
     {
         private static readonly List<Estudiante> Estudiantes = new List<Estudiante>();
 
-        private static void Main(string[] args)
+        private static void Main()
         {
-            var salir = false;
-
-            while (!salir)
+            while (true)
             {
-                Console.Clear();
                 MostrarMenu();
-
-                var opcion = Console.ReadLine();
-                Console.Clear();
+                var opcion = LeerEnteroEntre(1, 5);
 
                 switch (opcion)
                 {
-                    case "1":
-                        CalcularPromedioGeneral();
+                    case 1:
+                        RegistrarEstudiante();
                         break;
-                    case "2":
-                        CalcularPromedioPorEstudiante();
+                    case 2:
+                        AgregarCalificacion();
                         break;
-                    case "3":
+                    case 3:
                         MostrarTodosLosDatos();
                         break;
-                    case "4":
-                        MostrarCondicionCalificaciones();
-                        break;
-                    case "5":
+                    case 4:
                         MostrarCalificacionesEnFilasYColumnas();
                         break;
-                    case "6":
-                        AgregarEstudiante();
-                        break;
-                    case "7":
-                        salir = true;
-                        break;
-                    default:
-                        Console.WriteLine("Opción inválida. Por favor, elige una opción válida del menú.");
-                        break;
+                    case 5:
+                        Console.WriteLine("Saliendo del programa...");
+                        return;
                 }
 
-                Console.WriteLine("\nPulsa cualquier tecla para continuar...");
+                Console.WriteLine("\nPresiona una tecla para continuar...");
                 Console.ReadKey();
+                Console.Clear();
             }
         }
 
         private static void MostrarMenu()
         {
+            Console.Clear();
             Console.WriteLine("*******************");
             Console.WriteLine("CALCULADORA DE CALIFICACIONES");
             Console.WriteLine("*******************");
-            Console.WriteLine("1. Calcular promedio general");
-            Console.WriteLine("2. Calcular promedio por estudiante");
+            Console.WriteLine("1. Registrar estudiante");
+            Console.WriteLine("2. Agregar calificación");
             Console.WriteLine("3. Mostrar todos los datos");
-            Console.WriteLine("4. Mostrar condición de calificaciones con el promedio general");
-            Console.WriteLine("5. Mostrar todas las calificaciones con los nombres de los estudiantes");
-            Console.WriteLine("6. Agregar estudiante");
-            Console.WriteLine("7. Salir");
-            Console.Write("\nElige una opción: ");
+            Console.WriteLine("4. Mostrar calificaciones en filas y columnas");
+            Console.WriteLine("5. Salir del programa");
+            Console.Write("Selecciona una opción (1-5): ");
         }
 
-        private static double CalcularPromedioGeneral()
+        private static int LeerEnteroEntre(int min, int max)
         {
-            if (Estudiantes.Count == 0)
+            while (true)
             {
-                Console.WriteLine("No hay estudiantes registrados.");
-                return 0;
+                if (int.TryParse(Console.ReadLine(), out var numero) && numero >= min && numero <= max)
+                {
+                    return numero;
+                }
+                
+                Console.Write("Entrada inválida. Introduce un número entre {0} y {1}: ", min, max);
             }
-
-            var sumaCalificaciones = Estudiantes.Sum(estudiante => estudiante.CalcularPromedio());
-
-            var promedioGeneral = sumaCalificaciones / Estudiantes.Count;
-
-            Console.WriteLine("Promedio general: " + promedioGeneral.ToString("0.00"));
-
-            return promedioGeneral;
         }
 
-        private static void CalcularPromedioPorEstudiante()
+        private static void RegistrarEstudiante()
         {
+            Console.Clear();
+            Console.Write("Nombre del estudiante: ");
+            var nombre = Console.ReadLine();
+
+            Estudiantes.Add(new Estudiante(nombre));
+            Console.WriteLine("Estudiante registrado exitosamente.");
+        }
+
+        private static void AgregarCalificacion()
+        {
+            Console.Clear();
             if (Estudiantes.Count == 0)
             {
                 Console.WriteLine("No hay estudiantes registrados.");
@@ -100,14 +92,24 @@ namespace ProyectoFinal_IntroPro
             var indiceEstudiante = LeerEnteroEntre(1, Estudiantes.Count) - 1;
 
             var estudianteSeleccionado = Estudiantes[indiceEstudiante];
-            var promedioEstudiante = estudianteSeleccionado.CalcularPromedio();
+            Console.WriteLine("\nMaterias:");
+            MostrarMaterias();
 
-            Console.WriteLine("\nPromedio del estudiante {0}: {1:0.00}", estudianteSeleccionado.Nombre,
-                promedioEstudiante);
+            Console.Write("Selecciona una materia (1-{0}): ", Materias.Count);
+            var indiceMateria = LeerEnteroEntre(1, Materias.Count) - 1;
+
+            var materiaSeleccionada = Materias[indiceMateria];
+
+            Console.Write("Calificación: ");
+            var calificacion = LeerDouble();
+
+            estudianteSeleccionado.AgregarCalificacion(materiaSeleccionada, calificacion);
+            Console.WriteLine("Calificación agregada exitosamente.");
         }
 
         private static void MostrarTodosLosDatos()
         {
+            Console.Clear();
             if (Estudiantes.Count == 0)
             {
                 Console.WriteLine("No hay estudiantes registrados.");
@@ -117,70 +119,27 @@ namespace ProyectoFinal_IntroPro
             foreach (var estudiante in Estudiantes)
             {
                 Console.WriteLine("ESTUDIANTE: {0}\n", estudiante.Nombre);
-                Console.WriteLine("Calificación\t\tCondición");
-                Console.WriteLine("---------------------------------------");
+                Console.WriteLine("Materia\t\tCalificación\t\tCondición");
+                Console.WriteLine("-------------------------------------------------------");
 
-                foreach (var kvp in estudiante.ObtenerCalificaciones())
+                var promedios = estudiante.CalcularPromedioPorMateria();
+
+                foreach (var kvp in promedios)
                 {
                     var materia = kvp.Key;
-                    var calificacion = kvp.Value;
-                    var condicion = ObtenerCondicionCalificacion(calificacion);
+                    var promedio = kvp.Value;
+                    var condicion = ObtenerCondicion(promedio);
 
-                    Console.WriteLine("{0}\t\t\t{1}", calificacion, condicion);
+                    Console.WriteLine("{0}\t\t{1:0.00}\t\t\t{2}", materia, promedio, condicion);
                 }
 
-                Console.WriteLine("\n");
+                Console.WriteLine();
             }
-        }
-
-        private static string ObtenerCondicionCalificacion(double calificacion)
-        {
-            if (calificacion >= 90)
-            {
-                return "Excelente";
-            }
-            else if (calificacion >= 80)
-            {
-                return "Bueno";
-            }
-            else if (calificacion >= 70)
-            {
-                return "Regular";
-            }
-            else
-            {
-                return "Reprobado";
-            }
-        }
-
-        private static void MostrarCondicionCalificaciones()
-        {
-            if (Estudiantes.Count == 0)
-            {
-                Console.WriteLine("No hay estudiantes registrados.");
-                return;
-            }
-
-            Console.WriteLine("Estudiantes:");
-            MostrarNombresEstudiantes();
-
-            Console.Write("Selecciona un estudiante (1-{0}): ", Estudiantes.Count);
-            var indiceEstudiante = LeerEnteroEntre(1, Estudiantes.Count) - 1;
-
-            var estudianteSeleccionado = Estudiantes[indiceEstudiante];
-            var promedioGeneral = CalcularPromedioGeneral();
-
-            Console.WriteLine("\nCondición de calificaciones para el estudiante {0}:", estudianteSeleccionado.Nombre);
-
-            Console.WriteLine(
-                estudianteSeleccionado.CalcularPromedio() >= promedioGeneral
-                    ? "El estudiante {0} tiene un promedio por encima del promedio general."
-                    : "El estudiante {0} tiene un promedio por debajo del promedio general.",
-                estudianteSeleccionado.Nombre);
         }
 
         private static void MostrarCalificacionesEnFilasYColumnas()
         {
+            Console.Clear();
             if (Estudiantes.Count == 0)
             {
                 Console.WriteLine("No hay estudiantes registrados.");
@@ -195,44 +154,22 @@ namespace ProyectoFinal_IntroPro
 
             var estudianteSeleccionado = Estudiantes[indiceEstudiante];
             Console.WriteLine("\nCalificaciones del estudiante {0}:", estudianteSeleccionado.Nombre);
-            estudianteSeleccionado.MostrarCalificaciones();
-        }
 
-        private static void AgregarEstudiante()
-        {
-            Console.WriteLine("Agregar estudiantes:");
-            
-            Console.Write("Ingrese el número de estudiantes a agregar: ");
-            var numeroEstudiantes = LeerEnteroPositivo();
+            var calificacionesPorMateria = estudianteSeleccionado.ObtenerCalificacionesPorMateria();
 
-            for (var i = 0; i < numeroEstudiantes; i++)
+            foreach (var kvp in calificacionesPorMateria)
             {
-                Console.WriteLine("\nEstudiante ({0}/{1}):", i + 1, numeroEstudiantes);
-                Console.Write("Nombre: ");
-                var nombre = Console.ReadLine();
+                var materia = kvp.Key;
+                var calificaciones = kvp.Value;
 
-                var estudiante = new Estudiante(nombre);
+                Console.WriteLine("\nMateria: {0}", materia);
+                Console.WriteLine("Calificaciones:");
 
-                Console.Write("Ingrese el número de materias: ");
-                var numeroMaterias = LeerEnteroPositivo();
-
-                for (var j = 0; j < numeroMaterias; j++)
+                foreach (var calificacion in calificaciones)
                 {
-                    Console.WriteLine("\nMateria ({0}/{1}:", j + 1, numeroMaterias);
-                    /*Console.WriteLine("\nMateria {0}:", j + 1);*/
-                    Console.Write("Nombre de la materia: ");
-                    var nombreMateria = Console.ReadLine();
-
-                    Console.Write("Calificación: ");
-                    var calificacion = LeerDoubleEntre(0, 100);
-
-                    estudiante.AgregarCalificacion(nombreMateria, calificacion);
+                    Console.WriteLine(calificacion);
                 }
-
-                Estudiantes.Add(estudiante);
             }
-
-            Console.WriteLine("\nEstudiantes agregados correctamente.");
         }
 
         private static void MostrarNombresEstudiantes()
@@ -243,40 +180,48 @@ namespace ProyectoFinal_IntroPro
             }
         }
 
-        private static int LeerEnteroEntre(int min, int max)
+        private static void MostrarMaterias()
         {
-            int numero;
-
-            while (!int.TryParse(Console.ReadLine(), out numero) || numero < min || numero > max)
+            for (var i = 0; i < Materias.Count; i++)
             {
-                Console.Write("Entrada inválida. Ingrese un número entre {0} y {1}: ", min, max);
+                Console.WriteLine("{0}. {1}", i + 1, Materias[i]);
             }
-
-            return numero;
         }
 
-        private static int LeerEnteroPositivo()
+        private static double LeerDouble()
         {
-            int numero;
-
-            while (!int.TryParse(Console.ReadLine(), out numero) || numero <= 0)
+            while (true)
             {
-                Console.Write("Entrada inválida. Ingrese un número entero positivo: ");
-            }
+                if (double.TryParse(Console.ReadLine(), out var numero))
+                {
+                    return numero;
+                }
 
-            return numero;
+                Console.Write("Entrada inválida. Introduce un número válido: ");
+            }
         }
 
-        private static double LeerDoubleEntre(double min, double max)
+        private static string ObtenerCondicion(double promedio)
         {
-            double numero;
-
-            while (!double.TryParse(Console.ReadLine(), out numero) || numero < min || numero > max)
+            if (promedio >= 90)
             {
-                Console.Write("Entrada inválida. Ingrese un número entre {0} y {1}: ", min, max);
+                return "Excelente";
             }
-
-            return numero;
+            else if (promedio >= 80)
+            {
+                return "Bueno";
+            }
+            else if (promedio >= 70)
+            {
+                return "Regular";
+            }
+            else
+            {
+                return "Reprobado";
+            }
         }
+
+        private static readonly List<string> Materias = new List<string>
+            { "Matemáticas", "Ciencias", "Historia", "Idiomas" };
     }
 }

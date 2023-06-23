@@ -6,54 +6,46 @@ namespace ProyectoFinal_IntroPro
 {
     public class Estudiante
     {
-        public string Nombre { get; }
-        private readonly Dictionary<string, double> _calificaciones;
+        public string Nombre { get; private set; }
+        private readonly Dictionary<string, List<double>> _calificacionesPorMateria;
 
         public Estudiante(string nombre)
         {
             Nombre = nombre;
-            _calificaciones = new Dictionary<string, double>();
+            _calificacionesPorMateria = new Dictionary<string, List<double>>();
         }
 
         public void AgregarCalificacion(string materia, double calificacion)
         {
-            _calificaciones.Add(materia, calificacion);
-        }
-
-        public double CalcularPromedio()
-        {
-            if (_calificaciones.Count == 0)
+            if (_calificacionesPorMateria.TryGetValue(materia, out var value))
             {
-                return 0;
+                value.Add(calificacion);
             }
-
-            var sumaCalificaciones = _calificaciones.Values.Sum();
-
-            return sumaCalificaciones / _calificaciones.Count;
-        }
-
-        public void MostrarDatos()
-        {
-            foreach (var kvp in _calificaciones)
+            else
             {
-                Console.WriteLine("Materia: {0}\tCalificación: {1}", kvp.Key, kvp.Value);
+                _calificacionesPorMateria[materia] = new List<double> { calificacion };
             }
         }
 
-        public void MostrarCalificaciones()
+        public Dictionary<string, List<double>> ObtenerCalificacionesPorMateria()
         {
-            Console.WriteLine("Materia\t\tCalificación");
-            Console.WriteLine("------------------------");
-
-            foreach (var kvp in _calificaciones)
-            {
-                Console.WriteLine("{0}\t\t{1}", kvp.Key, kvp.Value);
-            }
+            return _calificacionesPorMateria;
         }
-        
-        public Dictionary<string, double> ObtenerCalificaciones()
+
+        public Dictionary<string, double> CalcularPromedioPorMateria()
         {
-            return _calificaciones;
+            var promedios = new Dictionary<string, double>();
+
+            foreach (var kvp in _calificacionesPorMateria)
+            {
+                var materia = kvp.Key;
+                var calificaciones = kvp.Value;
+                var promedio = calificaciones.Average();
+
+                promedios[materia] = promedio;
+            }
+
+            return promedios;
         }
     }
 }
