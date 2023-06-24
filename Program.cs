@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Created by Rider
+ *
+ * User: zOmArRD
+ * Date: 23/6/2023
+ *
+ * Copyright © 2023 <dev@zomarrd.me> - All Rights Reserved.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
