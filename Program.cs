@@ -101,6 +101,7 @@ namespace ProyectoFinal_IntroPro
             var student = new Student(nombre);
             foreach (var materia in Subject.MateriasPredeterminadas)
             {
+                Console.Clear();
                 Console.WriteLine("\nIngresar calificaciones para la materia: " + materia);
 
                 for (var i = 1; i <= 4; i++)
@@ -136,13 +137,15 @@ namespace ProyectoFinal_IntroPro
                 return;
             }
 
+            Console.Clear();
             Console.WriteLine("\nPromedio General:");
 
             foreach (var student in _students)
             {
+                Console.WriteLine("\n");
+                Console.WriteLine("-------------------------");
                 Console.WriteLine("\nEstudiante: " + student.Nombre);
                 Console.WriteLine("-------------------------");
-
                 foreach (var materia in student.Materias)
                 {
                     var promedioMateria = materia.CalcularPromedio();
@@ -161,27 +164,41 @@ namespace ProyectoFinal_IntroPro
 
         private static void CalcularPromedioPorEstudiante()
         {
+            Console.Clear();
             if (_students.Count == 0)
             {
                 Console.WriteLine("No hay estudiantes registrados en el sistema.");
                 return;
             }
 
-            foreach (var student in _students)
+            Console.WriteLine("Estudiantes registrados en el sistema:");
+            MostrarNombresEstudiantes();
+
+            Console.Write("Selecciona un estudiante (1-{0}): ", _students.Count);
+            var indiceEstudiante = ReadIntegerBetween(1, _students.Count) - 1;
+
+            var student = _students[indiceEstudiante];
+
+            Console.WriteLine("\nEstudiante: " + student.Nombre);
+            Console.WriteLine("-------------------------");
+
+            foreach (var materia in student.Materias)
             {
-                Console.WriteLine("\nEstudiante: " + student.Nombre);
-                Console.WriteLine("-------------------------");
+                Console.WriteLine("Materia: " + materia.Nombre);
+                materia.MostrarCalificaciones();
+                Console.WriteLine("Promedio: " + materia.CalcularPromedio());
+                Console.WriteLine("Condición: " + materia.CalcularCondicion());
+                Console.WriteLine();
+            }
 
-                foreach (var materia in student.Materias)
-                {
-                    Console.WriteLine("Materia: " + materia.Nombre);
-                    materia.MostrarCalificaciones();
-                    Console.WriteLine("Promedio: " + materia.CalcularPromedio());
-                    Console.WriteLine("Condición: " + materia.CalcularCondicion());
-                    Console.WriteLine();
-                }
+            Console.WriteLine("Promedio General: " + student.CalcularPromedioGeneral());
+        }
 
-                Console.WriteLine("Promedio General: " + student.CalcularPromedioGeneral());
+        public static void MostrarNombresEstudiantes()
+        {
+            for (var i = 0; i < _students.Count; i++)
+            {
+                Console.WriteLine("{0}. {1}", i + 1, _students[i].Nombre);
             }
         }
 
@@ -192,9 +209,9 @@ namespace ProyectoFinal_IntroPro
                 Console.WriteLine("No hay estudiantes registrados en el sistema.");
                 return;
             }
-            
+
             Console.WriteLine("\nListado de Estudiantes:");
-            
+
             foreach (var student in _students)
             {
                 Console.WriteLine("-------------------------");
@@ -213,7 +230,7 @@ namespace ProyectoFinal_IntroPro
                 Console.WriteLine("Promedio General: " + student.CalcularPromedioGeneral());
                 Console.WriteLine("-------------------------");
             }
-            
+
             var promedioGeneral = _students.Average(student => student.CalcularPromedioGeneral());
             Console.WriteLine("\nPromedio General de todos los estudiantes: " + promedioGeneral);
         }

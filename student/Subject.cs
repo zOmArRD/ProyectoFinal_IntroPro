@@ -34,8 +34,7 @@ namespace ProyectoFinal_IntroPro.student
         {
             foreach (var periodo in Calificaciones)
             {
-                Console.WriteLine("Período {0}:", periodo.Key);
-                Console.WriteLine(string.Join(", ", periodo.Value));
+                Console.WriteLine("Período {0}: {1}", periodo.Key, string.Join(", ", periodo.Value));
             }
         }
 
